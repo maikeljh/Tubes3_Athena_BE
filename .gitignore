@@ -1,0 +1,8 @@
+# Prisma environment variables
+*.env*
+
+# Dependencies
+node_modules/
+
+# Misc
+*.txt
