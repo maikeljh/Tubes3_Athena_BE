@@ -41,7 +41,7 @@ model History {
 }
 
 model Message {
-  messageId        Int      @id @default(autoincrement()) @map("message_id")
+  messageId        Int      @default(autoincrement()) @map("message_id")
   botMessage       String   @map("bot_message")
   userMessage      String   @map("user_message")
   messageTimeStamp DateTime @map("message_time_stamp")
@@ -49,6 +49,7 @@ model Message {
   historyId        Int      @map("history_id")
   userId           Int      @map("user_id")
 
+  @@id([messageId, historyId, userId])
   @@index([messageTimeStamp(sort: Asc)])
   @@map("message")
 }
