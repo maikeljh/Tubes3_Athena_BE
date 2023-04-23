@@ -7,26 +7,10 @@ export class HistoryService {
     return allHistory;
   }
 
-  async createUserHistory(data: any, userId: number): Promise<History> {
+  async createUserHistory(userId: number): Promise<History> {
     const createdHistory = await prisma.history.create({
       data: {
         userId: userId,
-        message: {
-          create: {
-            botMessage: data.botMessage,
-            userMessage: data.userMessage,
-            messageTimeStamp: new Date(),
-          },
-        },
-      },
-      include: {
-        message: {
-          select: {
-            messageId: true,
-            botMessage: true,
-            userMessage: true,
-          },
-        },
       },
     });
     return createdHistory;

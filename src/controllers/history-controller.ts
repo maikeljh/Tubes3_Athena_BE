@@ -20,10 +20,8 @@ export class HistoryController {
 
   async createUserHistory(req: Request, res: Response) {
     try {
-      const data = req.body;
       const userId = Number(req.params.userId);
       const createdHistory = await this.historyService.createUserHistory(
-        data,
         userId
       );
       res.status(201).json(createdHistory);
