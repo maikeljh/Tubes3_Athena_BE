@@ -25,7 +25,6 @@ export class MessageService {
       data: {
         botMessage: data.botMessage,
         userMessage: data.userMessage,
-        messageTimeStamp: new Date(),
         userId: userId,
         historyId: historyId,
       },

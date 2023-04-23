@@ -44,7 +44,7 @@ model Message {
   messageId        Int      @default(autoincrement()) @map("message_id")
   botMessage       String   @map("bot_message")
   userMessage      String   @map("user_message")
-  messageTimeStamp DateTime @map("message_time_stamp")
+  messageTimeStamp DateTime @default(now()) @map("message_time_stamp")
   history          History  @relation(fields: [historyId, userId], references: [historyId, userId], onDelete: Cascade)
   historyId        Int      @map("history_id")
   userId           Int      @map("user_id")
