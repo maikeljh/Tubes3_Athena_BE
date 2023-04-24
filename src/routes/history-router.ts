@@ -10,6 +10,10 @@ historyRouter.get(
   "/history",
   historyController.getAllHistory.bind(historyController)
 );
+historyRouter.get(
+  "/history/:userId",
+  historyController.getAllUserHistory.bind(historyController)
+);
 historyRouter.post(
   "/history/:userId",
   historyController.createUserHistory.bind(historyController)

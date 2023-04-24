@@ -18,6 +18,17 @@ export class HistoryController {
     }
   }
 
+  async getAllUserHistory(req: Request, res: Response) {
+    try {
+      const userId = Number(req.params.userId);
+      const allHistory = await this.historyService.getAllUserHistory(userId);
+      res.status(200).json(allHistory);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async createUserHistory(req: Request, res: Response) {
     try {
       const userId = Number(req.params.userId);

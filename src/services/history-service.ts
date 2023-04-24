@@ -7,6 +7,13 @@ export class HistoryService {
     return allHistory;
   }
 
+  async getAllUserHistory(userId: number): Promise<History[]> {
+    const allUserHistory = await prisma.history.findMany({
+      where: { userId: userId }
+  });
+    return allUserHistory;
+  }
+
   async createUserHistory(userId: number): Promise<History> {
     const nextHistoryId = await this.findnextHistoryId(userId);
 
@@ -81,5 +88,16 @@ export class HistoryService {
         },
       },
     });
+
+    // Check if the user has any other histories
+    const remainingHistories = await prisma.history.count({
+      where: { userId: userId },
+    });
+
+    // If the user has no more histories, drop the sequence
+    if (remainingHistories === 0) {
+      const sequenceName = `history_history_id_user_${userId}_seq`;
+      await prisma.$queryRawUnsafe(`DROP SEQUENCE ${sequenceName};`);
+    }
   }
 }

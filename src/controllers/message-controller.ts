@@ -26,6 +26,11 @@ export class MessageController {
       const userId = Number(req.params.userId);
       const historyId = Number(req.params.historyId);
       const algorithm = String(req.query.algo);
+
+      if(algorithm !== "kmp" && algorithm !== "bm"){
+        throw new Error("Algorithm not valid!");
+      }
+      
       const allMessages = await this.messageService.createMessageInUserHistory(data, userId, historyId, algorithm);
       res.status(201).json(allMessages);
     } catch (error) {
