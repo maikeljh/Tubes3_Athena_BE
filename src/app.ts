@@ -12,7 +12,7 @@ app.use("/", qnaRouter);
 app.use("/", historyRouter);
 app.use("/", messageRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () =>
   console.log(`🚀 Server ready at: http://localhost:${PORT}`)

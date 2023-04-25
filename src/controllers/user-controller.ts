@@ -24,8 +24,7 @@ export class UserController {
       const createdUser = await this.userService.createUser(data);
       res.status(201).json(createdUser);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
   }
 }

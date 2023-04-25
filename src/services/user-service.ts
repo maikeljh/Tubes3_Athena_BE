@@ -8,6 +8,14 @@ export class UserService {
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    const allUsers = await this.getAllUsers();
+
+    for(let user of allUsers){
+      if (user.email === data.email){
+        throw new Error("Already registerd");
+      }
+    }
+    
     const createdUser = await prisma.user.create({
       data: {
         email: data.email,
