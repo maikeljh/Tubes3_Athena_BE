@@ -1,91 +1,66 @@
 export class StringMatching {
-    BMAlgorithm(pattern: string, text: string) {
-        var patternFix = pattern.toLowerCase();
-        var textFix = text.toLowerCase();
-        var patternLength = patternFix.length;
-        var textLength = textFix.length;
-        var badMatchTable = this.badMatch(patternFix);
-        var badTableLength = badMatchTable.badTable.length;
-        var i = patternLength - 1;
-        var j = patternLength - 1;
-        var flag = false;
-        var found;
-        var count = 0;
-        var jump;
-        var total = 0;
+    BMAlgorithm(pattern : string, text : string){
+        let patternFix = pattern.toLowerCase();
+        let textFix = text.toLowerCase();
+        let patternLength = patternFix.length;
+        let textLength = textFix.length;
+        let badMatchTable = new Array(patternLength);
+        let shift = 0;
+        let idxPattern;
+        let flag;
 
-        while (i < textLength && !flag) {
-            jump = 0;
-            if (patternFix.charAt(j) == textFix.charAt(i)) {
-                total++;
-                if (total == pattern.length) {
+        this.badMatch(patternFix, patternLength, badMatchTable);
+
+        if (patternLength == textLength){
+            while ( (textLength - patternLength ) >= shift){
+                idxPattern = patternLength - 1;
+
+                while ( idxPattern >= 0 && patternFix.charAt(idxPattern) == textFix.charAt(shift+idxPattern)){
+                    idxPattern--;
+                }
+
+                if ( idxPattern < 0){
                     flag = true;
-                }
-                j--;
-                i--;
-                count++;
-            } else {
-                total = 0;
-                found = false;
-                for (let k = 0; k < badTableLength; k++) {
-                    if (badMatchTable.patternChar[k] == textFix.charAt(i)) {
-                        if (badMatchTable.badTable[k] > jump) {
-                            jump = badMatchTable.badTable[k];
-                        }
-                            found = true;
-                            break;
+                    if (shift + patternLength < textLength){
+                        shift += textLength - badMatchTable[text.charAt(shift + patternLength).charCodeAt(0)];
+                    }
+                    else {
+                        shift += 1;
                     }
                 }
-                if (!found) {
-                    if (badMatchTable.badTable[badTableLength - 1] > jump) {
-                        jump = badMatchTable.badTable[badTableLength - 1];
-                    }
+                else {
+                    flag = false;
+                    shift += Math.max(1, idxPattern - badMatchTable[text.charAt(shift+idxPattern).charCodeAt(0)]);
                 }
-                i += count;
-                i += jump;
             }
         }
+        else { flag = false;}
+
         return flag;
     }
 
-    badMatch(pattern: string) {
-        var patternLength = pattern.length;
-        var flag;
-        var k = 0;
-        var patternChar = [];
-        var badTable = [];
+    badMatch(pattern : string, patternLength : number, badMatchTable : Array<number>){
 
-        for (let i = 0; i < patternLength; i++) {
-        flag = false;
-        for (let j = 0; j < i; j++) {
-            if (pattern.charAt(i) == patternChar[j]) {
-            badTable[j] = Math.max(1, patternLength - i - 1);
-            flag = true;
-            break;
-            }
+        for(let i = 0; i < 256; i++){
+            badMatchTable[i] = -1;
         }
-        if (!flag) {
-            patternChar[k] = pattern.charAt(i);
-            badTable[k] = Math.max(1, patternLength - i - 1);
-            k++;
-        }
-        }
-        patternChar[k] = "*";
-        badTable[k] = patternLength;
 
-        return { badTable, patternChar };
+        for(let j = 0; j< patternLength; j++){
+            badMatchTable[pattern.charAt(j).charCodeAt(0)] = j;
+        }
+
     }
 
     KMPAlgorithm(pattern: string, text: string) {
-        var patternFix = pattern.toLowerCase();
-        var textFix = text.toLowerCase();
-        var patternLength = patternFix.length;
-        var textLength = textFix.length;
-        var patternLPS = this.lpsArray(patternFix);
-        var flag = false;
+        let patternFix = pattern.toLowerCase();
+        let textFix = text.toLowerCase();
+        let patternLength = patternFix.length;
+        let textLength = textFix.length;
+        let patternLPS = this.lpsArray(patternFix);
+        let flag = false;
 
-        var i = 0;
-        var j = -1;
+        let i = 0;
+        let j = -1;
 
         while (i < textLength && !flag && patternLength == textLength) {
         if (patternFix.charAt(j + 1) == textFix.charAt(i)) {
@@ -106,9 +81,9 @@ export class StringMatching {
     }
 
     lpsArray(pattern: string) {
-        var patternLength = pattern.length;
-        var flag = false;
-        var backTo = 0;
+        let patternLength = pattern.length;
+        let flag = false;
+        let backTo = 0;
         const patternChar = [];
         const lpsArray = [];
 

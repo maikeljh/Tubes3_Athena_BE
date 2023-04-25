@@ -1,6 +1,6 @@
 export class StringSimilarity {
     similarity(s1: string, s2: string) {
-        var result;
+        let result;
 
         if (s1.length == 0 || s2.length == 0) {
             result = 1.0;
@@ -14,8 +14,8 @@ export class StringSimilarity {
     }
 
     editDistance(s1: string, s2: string) {
-        var string1 = s1.toLowerCase();
-        var string2 = s2.toLowerCase();
+        let string1 = s1.toLowerCase();
+        let string2 = s2.toLowerCase();
         const matrix = [];
 
         //init first column

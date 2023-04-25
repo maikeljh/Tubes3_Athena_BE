@@ -14,8 +14,8 @@ export class Classification {
         const dateString = inputArr[inputArr.length - 1];
         const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
         let match = dateString.match(dateRegex);
-        var flag;
-        var inputDate = 0;
+        let flag;
+        let inputDate = 0;
 
         if (
         !match ||
