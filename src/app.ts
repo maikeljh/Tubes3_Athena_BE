@@ -7,6 +7,10 @@ import cors from 'cors';
 
 const app = express();
 
+app.use(cors({
+    origin: true
+}));
+
 app.use(express.json());
 app.use("/", userRouter);
 app.use("/", qnaRouter);
@@ -14,10 +18,6 @@ app.use("/", historyRouter);
 app.use("/", messageRouter);
 
 const PORT = process.env.PORT || 3001;
-
-app.use(cors({
-    origin: true
-}));
 
 app.listen(PORT, () =>
   console.log(`🚀 Server ready at: http://localhost:${PORT}`)
