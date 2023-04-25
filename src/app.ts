@@ -16,7 +16,7 @@ app.use("/", messageRouter);
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({
-    origin: '*'
+    origin: true
 }));
 
 app.listen(PORT, () =>
