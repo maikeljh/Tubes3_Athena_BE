@@ -1,5 +1,5 @@
 export class StringMatching {
-    BMAlgorithm(pattern : string, text : string){
+    BMAlgorithm(pattern : string, text : string): boolean {
         let patternFix = pattern.toLowerCase();
         let textFix = text.toLowerCase();
         let patternLength = patternFix.length;
@@ -7,7 +7,7 @@ export class StringMatching {
         let badMatchTable = new Array(patternLength);
         let shift = 0;
         let idxPattern;
-        let flag;
+        let flag = false;
 
         this.badMatch(patternFix, patternLength, badMatchTable);
 
@@ -33,8 +33,9 @@ export class StringMatching {
                     shift += Math.max(1, idxPattern - badMatchTable[text.charAt(shift+idxPattern).charCodeAt(0)]);
                 }
             }
+        } else { 
+            flag = false;
         }
-        else { flag = false;}
 
         return flag;
     }
@@ -51,7 +52,7 @@ export class StringMatching {
 
     }
 
-    KMPAlgorithm(pattern: string, text: string) {
+    KMPAlgorithm(pattern: string, text: string): boolean{
         let patternFix = pattern.toLowerCase();
         let textFix = text.toLowerCase();
         let patternLength = patternFix.length;
