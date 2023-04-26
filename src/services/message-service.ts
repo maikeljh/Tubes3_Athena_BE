@@ -228,7 +228,7 @@ export class MessageService {
       // Create new history
       const createHistory = new HistoryService();
 
-      const newHistory = await createHistory.createUserHistory(userId);
+      const newHistory = await createHistory.createUserHistory(userId, data.userMessage);
       
       await prisma.message.create({
         data: {

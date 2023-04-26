@@ -18,6 +18,10 @@ historyRouter.post(
   "/history/:userId",
   historyController.createUserHistory.bind(historyController)
 );
+historyRouter.put(
+  "/history/:userId/:historyId",
+  historyController.updateUserHistoryTopic.bind(historyController)
+)
 historyRouter.delete(
   "/history/:userId",
   historyController.deleteAllUserHistory.bind(historyController)
