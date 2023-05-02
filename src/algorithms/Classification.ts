@@ -12,84 +12,112 @@ export class Classification {
     }
 
     isCalculator = (s: string) => {
-        const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.\s]+)(\?)?$/;
-        const operators = ["+", "-", "*", "/"];
+        const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.^\s]+)(\?)?$/;
+        const operatorsArray = ["+", "-", "*", "/", "^"];
+        const match = regexCalculator.exec(s);
         let result = 0;
         let flag = false;
-        if (regexCalculator.test(s)) {
+
+        if (match) {
             let values = [];
-            let operands = [];
-            
-            let input = s.split('');
-            
+            let operators = [];
+            let input = match[1].split('');
+
             for (let i = 0; i < input.length; i++){
                 if (input[i] == ' '){
-                    continue;
+                    // Checking if before and after number or not
+                    let j = i, k = i;
+                    let wrong = false;
+                    let done = false;
+                    while(--j >= 0 && !done){
+                        if(input[j] >= '0' && input[j] <= '9'){
+                            while(++k < input.length && !wrong){
+                                if(input[k] >= '0' && input[k] <= '9'){
+                                    done = true;
+                                    wrong = true;
+                                    break;
+                                } else if(input[k] != ' '){
+                                    done = true;
+                                    break;
+                                }
+                            }
+                        } else if(input[j] != ' '){
+                            done = true;
+                            break;        
+                        }
+                    }
+                    if(!wrong){
+                        continue;
+                    } else {
+                        flag = true;
+                        return {flag, undefined};
+                    }
                 }
                 
-                if(input[i] >= '0' && input[i] < '9'){
-                    let tempValue ="";
+                if(input[i] >= '0' && input[i] <= '9'){
+                    let tempValue = input[i];
                     
-                    while (i < input.length && ((input[i] >= '0' && input[i] <= '9') || input[i] == '.')){
-                        tempValue += input[i++];
+                    while (i+1 < input.length && ((input[i+1] >= '0' && input[i+1] <= '9') || input[i+1] == '.')){
+                        tempValue += input[++i];
                     }
                     
                     values.push(Number(tempValue));
                 }
+
                 if (input[i] == '('){
                     if (input[i+1] == '-'){
                         values.push(0);
                     }
-                    operands.push(input[i]);
+                    operators.push(input[i]);
                 }
+
                 if (input[i] == ')'){
-                    while (operands[operands.length - 1] != '('){
-                        const tempCalOps = operands.pop();
+                    while (operators[operators.length - 1] != '('){
+                        const tempCalOps = operators.pop();
                         const tempCalVal1 = values.pop() as number;
                         const tempCalVal2 = values.pop() as number;
                         if (tempCalOps != undefined && tempCalVal1 != undefined && tempCalVal2 != undefined){
                             values.push(calculate(tempCalOps, tempCalVal1, tempCalVal2));
                         }
                     }
-                    operands.pop();
+                    operators.pop();
                 }
-                if (operators.includes(input[i])){
-                    let tempOps = input[i];
-                    if (tempOps == '*' && i < input.length){
-                        if (input[i+1] == '*') {
-                            tempOps = "**";
-                            i++;
-                        }
+
+                if (operatorsArray.includes(input[i])){
+                    if(input[i] == "-" && i == 0){
+                        values.push(0);
                     }
-                    while (operands.length > 0 && priorityOps(tempOps, operands[operands.length -1])){
-                        const tempCalOps = operands.pop();
+                    let tempOps = input[i];
+                    while (operators.length > 0 && priorityOps(tempOps, operators[operators.length -1])){
+                        const tempCalOps = operators.pop();
                         const tempCalVal1 = values.pop() as number;
                         const tempCalVal2 = values.pop() as number;
                         if (tempCalOps != undefined && tempCalVal1 != undefined && tempCalVal2 != undefined){
                             values.push(calculate(tempCalOps, tempCalVal1, tempCalVal2));
                         }
                     }
-                    operands.push(tempOps);
+                    operators.push(tempOps);
                 }
             }
-            while (operands.length > 0) {
-                const tempCalOps = operands.pop();
+
+            while (operators.length > 0) {
+                const tempCalOps = operators.pop();
                 const tempCalVal1 = values.pop() as number;
                 const tempCalVal2 = values.pop() as number;
                 if (tempCalOps != undefined && tempCalVal1 != undefined && tempCalVal2 != undefined){
                     values.push(calculate(tempCalOps, tempCalVal1, tempCalVal2));
                 }
             }
+
             result = values.pop() as number;
             flag = true;
             return {flag, result};
-        
         } else {
             return {flag, result} ;
         }
 
         function priorityOps (ops1: String, ops2: String) {
-            if (ops2 == '(' || ops2 == ')' || ops1 == "**"){
+            if (ops2 == '(' || ops2 == ')' || ops1 == "^"){
                 return false;
             }
             else if ((ops1 == '*' || ops1 == '/') && (ops2 == "+" || ops2 == "-")){
@@ -109,11 +137,8 @@ export class Classification {
                 case '*' :
                     return a * b;
                 case '/' :
-                    if (b == 0){
-                        console.log("Cannot divide by 0");
-                    }
                     return a / b;
-                case "**" :
+                case "^" :
                     return a ** b;
             }
             return 0;

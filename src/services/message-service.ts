@@ -88,7 +88,15 @@ export class MessageService {
           if (expression[expression.length - 1] === "?") {
             expression = expression.slice(0, -1);
           }
-          answer += "Hasilnya adalah " + resultCalcu.result.toString() + ".";
+          if(resultCalcu.result === undefined){
+            answer += "Sintaks persamaan tidak sesuai.";
+          } else {
+            if(resultCalcu.result.toString() === "Infinity"){
+              answer += "Hasilnya adalah undefined.";
+            } else {
+              answer += "Hasilnya adalah " + resultCalcu.result.toString() + ".";
+            }
+          }
         } catch (e) {
           answer += "Sintaks persamaan tidak sesuai.";
         }
@@ -215,11 +223,19 @@ export class MessageService {
             if (qna.length < 3) {
               for (let i = 0; i < qna.length; i++) {
                 if (i != qna.length - 1) {
-                  answer +=
-                    (i + 1).toString() +
-                    ". " +
-                    percentageArray[i].percantageQuestion +
-                    "\n";
+                  if(percentageArray[i+1].percentages > 0.5){
+                    answer +=
+                      (i + 1).toString() +
+                      ". " +
+                      percentageArray[i].percantageQuestion +
+                      "\n";
+                  } else {
+                    answer +=
+                      (i + 1).toString() +
+                      ". " +
+                      percentageArray[i].percantageQuestion;
+                    break;
+                  }
                 } else {
                   answer +=
                     (i + 1).toString() +
@@ -230,11 +246,19 @@ export class MessageService {
             } else {
               for (let i = 0; i < 3; i++) {
                 if (i != 2) {
-                  answer +=
-                    (i + 1).toString() +
-                    ". " +
-                    percentageArray[i].percantageQuestion +
-                    "\n";
+                  if(percentageArray[i+1].percentages > 0.5){
+                    answer +=
+                      (i + 1).toString() +
+                      ". " +
+                      percentageArray[i].percantageQuestion +
+                      "\n";
+                  } else {
+                    answer +=
+                      (i + 1).toString() +
+                      ". " +
+                      percentageArray[i].percantageQuestion;
+                    break;
+                  }
                 } else {
                   answer +=
                     (i + 1).toString() +

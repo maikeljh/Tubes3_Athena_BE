@@ -60,9 +60,6 @@ export class HistoryService {
     const nextHistoryId = await prisma.$queryRawUnsafe<NextValResult[]>(
       `SELECT NEXTVAL('${sequence_name}');`
     );
-    console.log(nextHistoryId);
-    console.log(nextHistoryId[0].nextval);
-    console.log(Number(nextHistoryId[0].nextval));
 
     return Number(nextHistoryId[0].nextval);
   }
