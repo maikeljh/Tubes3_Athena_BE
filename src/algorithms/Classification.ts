@@ -24,8 +24,7 @@ export class Classification {
             let input = s.split('');
             
             for (let i = 0; i < input.length; i++){
-                
-                if ( input[i] == ' '){
+                if (input[i] == ' '){
                     continue;
                 }
                 
@@ -103,7 +102,6 @@ export class Classification {
         }
 
         function calculate(ops: String, b: number, a: number){
-            
             switch (ops){
                 case '+' :
                     return a + b;
@@ -129,7 +127,7 @@ export class Classification {
         const dateString = inputArr[inputArr.length - 1];
         const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
         let match = dateString.match(dateRegex);
-        let flag;
+        let flag = true;
         let result = 0;
 
         if (!match){

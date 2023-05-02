@@ -57,177 +57,187 @@ export class MessageService {
     const stringSimilarity = new StringSimilarity();
 
     // Main Algorithm
-    var percentageArray = [];
-    var idx = 0;
+    var count: number = 0;
     let answer: string = "";
-
-    var resultDate = classify.isDate(data.userMessage);
-    var resultCalcu = classify.isCalculator(data.userMessage);
-    if (classify.isEmpty(data.userMessage)){
-      answer = "Pertanyaan kosong";
-    }
-    else if (resultDate.flag) {
-      var theDate = new Date(resultDate.result);
-      var days = [
-        "Minggu",
-        "Senin",
-        "Selasa",
-        "Rabu",
-        "Kamis",
-        "Jumat",
-        "Sabtu",
-      ];
-      var result = days[theDate.getDay()];
-      answer = "Hari " + result;
-    } else if (resultCalcu.flag) {
-      let expression = data.userMessage;
-      try {
-        if (expression[expression.length - 1] === "?") {
-          expression = expression.slice(0, -1);
-        }
-        answer = "Hasilnya adalah " + resultCalcu.result.toString();
-      } catch (e) {
-        answer = "Sintaks persamaan tidak sesuai.";
-      }
-    } else if (classify.isDelete(data.userMessage)) {
-      let regexQuestion = /^Hapus pertanyaan\s+(.*)$/;
-      let deleteQuestion = data.userMessage.match(regexQuestion) as RegExpMatchArray;
-      let found = false;
-      let qnaId = 0;
-      for (let el of qna) {
-        if (!found) {
-          if(algorithm === "kmp"){
-            found = stringMatching.KMPAlgorithm(
-              deleteQuestion[1].toLocaleLowerCase(),
-              el.question.toLocaleLowerCase()
-            );
-          } else if(algorithm == "bm"){
-            found = stringMatching.BMAlgorithm(
-              deleteQuestion[1].toLocaleLowerCase(),
-              el.question.toLocaleLowerCase()
-            );
+    const questions = data.userMessage.split("\n");
+    
+    for(let question of questions){
+      var idx = 0;
+      var percentageArray = [];
+      var resultDate = classify.isDate(question);
+      var resultCalcu = classify.isCalculator(question);
+      if (classify.isEmpty(question)){
+        answer += "Pertanyaan kosong.";
+      } else if (resultDate.flag) {
+        var theDate = new Date(resultDate.result);
+        var days = [
+          "Minggu",
+          "Senin",
+          "Selasa",
+          "Rabu",
+          "Kamis",
+          "Jumat",
+          "Sabtu",
+        ];
+        var result = days[theDate.getDay()];
+        answer += "Hari " + result + ".";
+      } else if (resultCalcu.flag) {
+        let expression = question;
+        try {
+          if (expression[expression.length - 1] === "?") {
+            expression = expression.slice(0, -1);
           }
+          answer += "Hasilnya adalah " + resultCalcu.result.toString() + ".";
+        } catch (e) {
+          answer += "Sintaks persamaan tidak sesuai.";
         }
-        if (found) {
-          answer = el.answer;
-          qnaId = el.qnaId;
-          break;
-        }
-      }
-      if (found) {
-        // Delete Pertanyaan
-        const deleteQnA = new QnaService();
-        deleteQnA.deleteQna(qnaId);
-        answer = "Pertanyaan " + deleteQuestion[1] + " telah dihapus";
-      } else {
-        answer =
-          "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
-      }
-    } else if (classify.isAdd(data.userMessage)) {
-      let regexQuestion = /^Tambahkan pertanyaan (.+) dengan jawaban (.+)$/;
-      let addQuestion = data.userMessage.match(regexQuestion) as RegExpMatchArray;
-      let found = false;
-      let qnaId = 0;
-      for (let el of qna) {
-        if (!found) {
-          found = stringMatching.KMPAlgorithm(
-            addQuestion[1].toLocaleLowerCase(),
-            el.question.toLocaleLowerCase()
-          );
-        }
-        if (found) {
-          answer = el.answer;
-          qnaId = el.qnaId;
-          break;
-        }
-      }
-      if (found) {
-        // Update jawaban pertanyaan
-        const updateQnA = new QnaService();
-        updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
-        answer =
-          "Pertanyaan " +
-          addQuestion[1] +
-          " sudah ada! Jawaban di-update ke " +
-          addQuestion[2];
-      } else {
-        // Tambahkan pertanyaan ke database
-        const addQnA = new QnaService();
-        addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
-        answer =
-          "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";   
-      }
-    } else { // Ask Question
-      let found = false;
-      for (let el of qna) {
-        if (!found) {
-          found = stringMatching.KMPAlgorithm(
-            data.userMessage.toLocaleLowerCase(),
-            el.question.toLocaleLowerCase()
-          );
-        }
-        if (found) {
-          answer = el.answer;
-          break;
-        }
-      }
-      if (!found) {
-        let percentage: number = 0.0;
+      } else if (classify.isDelete(question)) {
+        let regexQuestion = /^Hapus pertanyaan\s+(.*)$/;
+        let deleteQuestion = question.match(regexQuestion) as RegExpMatchArray;
+        let found = false;
+        let qnaId = 0;
         for (let el of qna) {
-          let temp = stringSimilarity.similarity(
-            data.userMessage.toLocaleLowerCase(),
-            el.question.toLocaleLowerCase()
-          );
-          var percentages = temp;
-          var percantageQuestion = el.question;
-          var percentageArrayData = { percentages, percantageQuestion };
-          percentageArray[idx] = percentageArrayData;
-          idx++;
-          if (temp > percentage) {
-            percentage = temp;
-            if (percentage >= 0.9) {
-              answer = el.answer;
+          if (!found) {
+            if(algorithm === "kmp"){
+              found = stringMatching.KMPAlgorithm(
+                deleteQuestion[1].toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
+            } else if(algorithm == "bm"){
+              found = stringMatching.BMAlgorithm(
+                deleteQuestion[1].toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
             }
           }
+          if (found) {
+            answer += el.answer + ".";
+            qnaId = el.qnaId;
+            break;
+          }
         }
-        if (percentage < 0.9) {
+        if (found) {
+          // Delete Pertanyaan
+          const deleteQnA = new QnaService();
+          deleteQnA.deleteQna(qnaId);
+          answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+        } else {
           answer +=
-            "Pertanyaan tidak ditemukan di database.\nApakah maksud Anda:\n";
-          percentageArray.sort((a, b) => b.percentages - a.percentages);
-          if (qna.length < 3) {
-            for (let i = 0; i < qna.length; i++) {
-              if (i != qna.length - 1) {
-                answer +=
-                  (i + 1).toString() +
-                  ". " +
-                  percentageArray[i].percantageQuestion +
-                  "\n";
-              } else {
-                answer +=
-                  (i + 1).toString() +
-                  ". " +
-                  percentageArray[i].percantageQuestion;
+            "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
+        }
+      } else if (classify.isAdd(question)) {
+        let regexQuestion = /^Tambahkan pertanyaan (.+) dengan jawaban (.+)$/;
+        let addQuestion = question.match(regexQuestion) as RegExpMatchArray;
+        let found = false;
+        let qnaId = 0;
+        for (let el of qna) {
+          if (!found) {
+            found = stringMatching.KMPAlgorithm(
+              addQuestion[1].toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+          }
+          if (found) {
+            answer += el.answer + ".";
+            qnaId = el.qnaId;
+            break;
+          }
+        }
+        if (found) {
+          // Update jawaban pertanyaan
+          const updateQnA = new QnaService();
+          updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
+          answer +=
+            "Pertanyaan " +
+            addQuestion[1] +
+            " sudah ada! Jawaban di-update ke " +
+            addQuestion[2] + ".";
+        } else {
+          // Tambahkan pertanyaan ke database
+          const addQnA = new QnaService();
+          addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
+          answer +=
+            "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";   
+        }
+      } else { // Ask Question
+        let found = false;
+        for (let el of qna) {
+          if (!found) {
+            found = stringMatching.KMPAlgorithm(
+              question.toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+          }
+          if (found) {
+            answer += el.answer + ".";
+            break;
+          }
+        }
+        if (!found) {
+          let percentage: number = 0.0;
+          for (let el of qna) {
+            let temp = stringSimilarity.similarity(
+              question.toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+            var percentages = temp;
+            var percantageQuestion = el.question;
+            var percentageArrayData = { percentages, percantageQuestion };
+            percentageArray[idx] = percentageArrayData;
+            idx++;
+            if (temp > percentage) {
+              percentage = temp;
+              if (percentage >= 0.9) {
+                answer += el.answer + ".";
+              }
+            }
+          }
+          if (percentage < 0.9 && percentage > 0.5) {
+            answer +=
+              "Pertanyaan tidak ditemukan di database.\nApakah maksud Anda:\n";
+            percentageArray.sort((a, b) => b.percentages - a.percentages);
+            if (qna.length < 3) {
+              for (let i = 0; i < qna.length; i++) {
+                if (i != qna.length - 1) {
+                  answer +=
+                    (i + 1).toString() +
+                    ". " +
+                    percentageArray[i].percantageQuestion +
+                    "\n";
+                } else {
+                  answer +=
+                    (i + 1).toString() +
+                    ". " +
+                    percentageArray[i].percantageQuestion;
+                }
+              }
+            } else {
+              for (let i = 0; i < 3; i++) {
+                if (i != 2) {
+                  answer +=
+                    (i + 1).toString() +
+                    ". " +
+                    percentageArray[i].percantageQuestion +
+                    "\n";
+                } else {
+                  answer +=
+                    (i + 1).toString() +
+                    ". " +
+                    percentageArray[i].percantageQuestion;
+                }
               }
             }
           } else {
-            for (let i = 0; i < 3; i++) {
-              if (i != 2) {
-                answer +=
-                  (i + 1).toString() +
-                  ". " +
-                  percentageArray[i].percantageQuestion +
-                  "\n";
-              } else {
-                answer +=
-                  (i + 1).toString() +
-                  ". " +
-                  percentageArray[i].percantageQuestion;
-              }
-            }
+            answer += "Tidak ada pertanyaan yang cocok dengan database!";
           }
         }
       }
+      if(count != questions.length - 1){
+        answer += "\n\n";
+        count++;
+      }
     }
+    
     if (historyId === 0) {
       // Create new history
       const createHistory = new HistoryService();
