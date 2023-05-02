@@ -62,8 +62,12 @@ export class MessageService {
     let answer: string = "";
 
     var resultDate = classify.isDate(data.userMessage);
-    if (resultDate.flag) {
-      var theDate = new Date(resultDate.inputDate);
+    var resultCalcu = classify.isCalculator(data.userMessage);
+    if (classify.isEmpty(data.userMessage)){
+      answer = "Pertanyaan kosong";
+    }
+    else if (resultDate.flag) {
+      var theDate = new Date(resultDate.result);
       var days = [
         "Minggu",
         "Senin",
@@ -75,13 +79,13 @@ export class MessageService {
       ];
       var result = days[theDate.getDay()];
       answer = "Hari " + result;
-    } else if (classify.isCalculator(data.userMessage)) {
+    } else if (resultCalcu.flag) {
       let expression = data.userMessage;
       try {
         if (expression[expression.length - 1] === "?") {
           expression = expression.slice(0, -1);
         }
-        answer = "Hasilnya adalah " + eval(expression).toString();
+        answer = "Hasilnya adalah " + resultCalcu.result.toString();
       } catch (e) {
         answer = "Sintaks persamaan tidak sesuai.";
       }
