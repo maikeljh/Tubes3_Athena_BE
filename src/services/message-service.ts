@@ -43,10 +43,6 @@ export class MessageService {
       })
     ).length;
 
-    const qna = (
-      await prisma.qna.findMany()
-    )
-
     // Classification Regex Algorithm
     const classify = new Classification();
 
@@ -62,10 +58,15 @@ export class MessageService {
     const questions = data.userMessage.split("\n");
     
     for(let question of questions){
+      const qna = (
+        await prisma.qna.findMany()
+      )
+
       var idx = 0;
       var percentageArray = [];
       var resultDate = classify.isDate(question);
       var resultCalcu = classify.isCalculator(question);
+
       if (classify.isEmpty(question)){
         answer += "Pertanyaan kosong.";
       } else if (resultDate.flag) {
@@ -111,7 +112,6 @@ export class MessageService {
             }
           }
           if (found) {
-            answer += el.answer + ".";
             qnaId = el.qnaId;
             break;
           }
@@ -119,7 +119,7 @@ export class MessageService {
         if (found) {
           // Delete Pertanyaan
           const deleteQnA = new QnaService();
-          deleteQnA.deleteQna(qnaId);
+          await deleteQnA.deleteQna(qnaId);
           answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
         } else {
           answer +=
@@ -132,13 +132,19 @@ export class MessageService {
         let qnaId = 0;
         for (let el of qna) {
           if (!found) {
-            found = stringMatching.KMPAlgorithm(
-              addQuestion[1].toLocaleLowerCase(),
-              el.question.toLocaleLowerCase()
-            );
+            if(algorithm === "kmp"){
+              found = stringMatching.KMPAlgorithm(
+                addQuestion[1].toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
+            } else if(algorithm == "bm"){
+              found = stringMatching.BMAlgorithm(
+                addQuestion[1].toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
+            }
           }
           if (found) {
-            answer += el.answer + ".";
             qnaId = el.qnaId;
             break;
           }
@@ -146,7 +152,7 @@ export class MessageService {
         if (found) {
           // Update jawaban pertanyaan
           const updateQnA = new QnaService();
-          updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
+          await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
           answer +=
             "Pertanyaan " +
             addQuestion[1] +
@@ -155,7 +161,7 @@ export class MessageService {
         } else {
           // Tambahkan pertanyaan ke database
           const addQnA = new QnaService();
-          addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
+          await addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
           answer +=
             "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";   
         }
@@ -163,10 +169,17 @@ export class MessageService {
         let found = false;
         for (let el of qna) {
           if (!found) {
-            found = stringMatching.KMPAlgorithm(
-              question.toLocaleLowerCase(),
-              el.question.toLocaleLowerCase()
-            );
+            if(algorithm === "kmp"){
+              found = stringMatching.KMPAlgorithm(
+                question.toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
+            } else if(algorithm == "bm"){
+              found = stringMatching.BMAlgorithm(
+                question.toLocaleLowerCase(),
+                el.question.toLocaleLowerCase()
+              );
+            }
           }
           if (found) {
             answer += el.answer + ".";
@@ -175,6 +188,8 @@ export class MessageService {
         }
         if (!found) {
           let percentage: number = 0.0;
+          let finalAnswer: string = "";
+
           for (let el of qna) {
             let temp = stringSimilarity.similarity(
               question.toLocaleLowerCase(),
@@ -187,12 +202,13 @@ export class MessageService {
             idx++;
             if (temp > percentage) {
               percentage = temp;
-              if (percentage >= 0.9) {
-                answer += el.answer + ".";
-              }
+              finalAnswer = el.answer;
             }
           }
-          if (percentage < 0.9 && percentage > 0.5) {
+
+          if (percentage >= 0.9) {
+                answer += finalAnswer + ".";
+          } else if (percentage < 0.9 && percentage > 0.5) {
             answer +=
               "Pertanyaan tidak ditemukan di database.\nApakah maksud Anda:\n";
             percentageArray.sort((a, b) => b.percentages - a.percentages);

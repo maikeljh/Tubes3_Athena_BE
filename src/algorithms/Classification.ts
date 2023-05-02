@@ -12,12 +12,11 @@ export class Classification {
     }
 
     isCalculator = (s: string) => {
-        const regexCalculator= /^[()\d+\-*/.\s]+(\?)?$/;
+        const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.\s]+)(\?)?$/;
         const operators = ["+", "-", "*", "/"];
         let result = 0;
         let flag = false;
         if (regexCalculator.test(s)) {
-        
             let values = [];
             let operands = [];
             
