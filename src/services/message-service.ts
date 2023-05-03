@@ -190,7 +190,11 @@ export class MessageService {
             }
           }
           if (found) {
-            answer += el.answer + ".";
+            if(el.answer[el.answer.length - 1] == "."){
+              answer += el.answer;
+            } else {
+              answer += el.answer + ".";
+            }
             break;
           }
         }
@@ -215,7 +219,11 @@ export class MessageService {
           }
 
           if (percentage >= 0.9) {
-                answer += finalAnswer + ".";
+            if(finalAnswer[finalAnswer.length - 1] == "."){
+              answer += finalAnswer;
+            } else {
+              answer += finalAnswer + ".";
+            }
           } else if (percentage < 0.9 && percentage > 0.5) {
             answer +=
               "Pertanyaan tidak ditemukan di database.\nApakah maksud Anda:\n";
