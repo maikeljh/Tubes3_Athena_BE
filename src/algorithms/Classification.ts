@@ -183,7 +183,7 @@ export class Classification {
 
                 // adjust month and year to Zeller's Rule
                 if (month < 3) {
-                    month +=10;
+                    month +=12;
                     year--;
                 }
                 if(month >=3) {
