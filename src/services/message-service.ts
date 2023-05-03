@@ -70,7 +70,7 @@ export class MessageService {
       if (classify.isEmpty(question)){
         answer += "Pertanyaan kosong.";
       } else if (resultDate.flag) {
-        var theDate = new Date(resultDate.result);
+        var theDate = resultDate.result;
         var days = [
           "Minggu",
           "Senin",
@@ -80,7 +80,7 @@ export class MessageService {
           "Jumat",
           "Sabtu",
         ];
-        var result = days[theDate.getDay()];
+        var result = days[theDate];
         answer += "Hari " + result + ".";
       } else if (resultCalcu.flag) {
         let expression = question;
