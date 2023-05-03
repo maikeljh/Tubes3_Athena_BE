@@ -196,10 +196,7 @@ export class Classification {
                 const C = Math.floor( year / 100);
                 // Zeller's Rule
                 result = k + Math.floor((13 * m -1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C;
-                if (result < 0) {
-                    result +=7;
-                }
-                result %=7;
+                result = Math.abs(result % 7);
             }
         }
 
