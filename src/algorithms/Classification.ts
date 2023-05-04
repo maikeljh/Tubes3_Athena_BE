@@ -204,7 +204,7 @@ export class Classification {
     }
 
     isDelete = (s: string) => {
-        const regexDelete: RegExp = /^(Hapus pertanyaan)/;
+        const regexDelete: RegExp = /^Hapus pertanyaan .+$/;
         if (regexDelete.test(s)) {
             return true;
         } else {
