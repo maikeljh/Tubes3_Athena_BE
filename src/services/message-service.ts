@@ -132,6 +132,7 @@ export class MessageService {
         if (found && count == 1) {
           let accuracy = stringSimilarity.similarity(deleteQuestion[1].toLocaleLowerCase(), questionArray[0]);
           if (accuracy >= 0.9){
+            qnaId = qIDArray[0];
             // Delete Pertanyaan
             const deleteQnA = new QnaService();
             await deleteQnA.deleteQna(qnaId);
@@ -194,6 +195,7 @@ export class MessageService {
         if (found && count == 1) {
           let accuracy = stringSimilarity.similarity(addQuestion[1].toLocaleLowerCase(), questionArray[0]);
           if (accuracy >= 0.9){
+            qnaId = qIDArray[0];
             // Update jawaban pertanyaan
             const updateQnA = new QnaService();
             await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
