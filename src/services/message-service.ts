@@ -105,6 +105,9 @@ export class MessageService {
         let deleteQuestion = question.match(regexQuestion) as RegExpMatchArray;
         let found = false;
         let qnaId = 0;
+        let questionArray = [];
+        let qIDArray = [];
+        let count = 0;
         for (let el of qna) {
           if (!found) {
             if(algorithm === "kmp"){
@@ -119,13 +122,39 @@ export class MessageService {
               );
             }
           }
-          if (found) {
+          if (found ) {
+            questionArray.push(el.question.toLocaleLowerCase());
+            qIDArray.push(el.qnaId);
             qnaId = el.qnaId;
-            break;
+            count++;
           }
         }
-        if (found) {
-          // Delete Pertanyaan
+        if (found && count == 1) {
+          let accuracy = stringSimilarity.similarity(deleteQuestion[1].toLocaleLowerCase(), questionArray[0]);
+          if (accuracy >= 0.9){
+            // Delete Pertanyaan
+            const deleteQnA = new QnaService();
+            await deleteQnA.deleteQna(qnaId);
+            answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+          } else {
+            answer +=
+            "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
+          }
+        } else if(found && count > 1) {
+          let max = 0;
+          let accuracy = 0;
+          let i = 0;
+          let idx = 0;
+          for (let q of questionArray){
+            accuracy = 0;
+            accuracy = stringSimilarity.similarity(deleteQuestion[1].toLocaleLowerCase(), q);
+            if (accuracy > max){
+              max = accuracy;
+              idx = i;
+            }
+            i++;
+          }
+          qnaId = qIDArray[idx];
           const deleteQnA = new QnaService();
           await deleteQnA.deleteQna(qnaId);
           answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
@@ -138,6 +167,9 @@ export class MessageService {
         let addQuestion = question.match(regexQuestion) as RegExpMatchArray;
         let found = false;
         let qnaId = 0;
+        let questionArray = [];
+        let qIDArray = [];
+        let count = 0;
         for (let el of qna) {
           if (!found) {
             if(algorithm === "kmp"){
@@ -153,12 +185,45 @@ export class MessageService {
             }
           }
           if (found) {
+            questionArray.push(el.question.toLocaleLowerCase());
+            qIDArray.push(el.qnaId);
             qnaId = el.qnaId;
-            break;
+            count++;
           }
         }
-        if (found) {
-          // Update jawaban pertanyaan
+        if (found && count == 1) {
+          let accuracy = stringSimilarity.similarity(addQuestion[1].toLocaleLowerCase(), questionArray[0]);
+          if (accuracy >= 0.9){
+            // Update jawaban pertanyaan
+            const updateQnA = new QnaService();
+            await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
+            answer +=
+              "Pertanyaan " +
+              addQuestion[1] +
+              " sudah ada! Jawaban di-update ke " +
+              addQuestion[2] + ".";
+          } else {
+            // Tambahkan pertanyaan ke database
+            const addQnA = new QnaService();
+            await addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
+            answer +=
+              "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!"; 
+          }
+        } else if(found && count > 1){
+          let max = 0;
+          let accuracy = 0;
+          let i = 0;
+          let idx = 0;
+          for (let q of questionArray){
+            accuracy = 0;
+            accuracy = stringSimilarity.similarity(addQuestion[1].toLocaleLowerCase(), q);
+            if (accuracy > max){
+              max = accuracy;
+              idx = i;
+            }
+            i++;
+          }
+          qnaId = qIDArray[idx];
           const updateQnA = new QnaService();
           await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
           answer +=
@@ -175,6 +240,10 @@ export class MessageService {
         }
       } else { // Ask Question
         let found = false;
+        let tempAnswer = "";
+        let questionArray = [];
+        let answerArray = [];
+        let count = 0;
         for (let el of qna) {
           if (!found) {
             if(algorithm === "kmp"){
@@ -191,14 +260,24 @@ export class MessageService {
           }
           if (found) {
             if(el.answer[el.answer.length - 1] == "."){
-              answer += el.answer;
+              tempAnswer += el.answer;
             } else {
-              answer += el.answer + ".";
+              tempAnswer += el.answer + ".";
             }
-            break;
+            questionArray.push(el.question.toLocaleLowerCase())
+            answerArray.push(tempAnswer);
+            count++;
           }
         }
-        if (!found) {
+        if (found && count == 1){
+          let accuracy = stringSimilarity.similarity(question.toLocaleLowerCase(), questionArray[0]);
+          if (accuracy >= 0.9){
+            answer = answerArray[0];
+          } else {
+            found = false;
+          }
+        }
+        if (!found || count != 1){
           let percentage: number = 0.0;
           let finalAnswer: string = "";
 

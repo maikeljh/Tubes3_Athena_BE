@@ -11,7 +11,7 @@ export class StringMatching {
 
         this.badMatch(patternFix, patternLength, badMatchTable);
 
-        if (patternLength == textLength){
+        if (patternLength <= textLength){
             while ( (textLength - patternLength ) >= shift){
                 idxPattern = patternLength - 1;
 
@@ -63,20 +63,22 @@ export class StringMatching {
         let i = 0;
         let j = -1;
 
-        while (i < textLength && !flag && patternLength == textLength) {
-        if (patternFix.charAt(j + 1) == textFix.charAt(i)) {
-            if (i + 1 == textLength) {
-            flag = true;
-            }
-            j++;
-            i++;
-        } else {
-            if (j == -1) {
-            i++;
+        if (patternLength <= textLength){
+            while (i < textLength && !flag) {
+            if (patternFix.charAt(j + 1) == textFix.charAt(i)) {
+                if (j + 1 == patternLength - 1) {
+                flag = true;
+                }
+                j++;
+                i++;
             } else {
-            j = patternLPS[j + 1] - 1;
+                if (j == -1) {
+                i++;
+                } else {
+                j = patternLPS[j + 1] - 1;
+                }
             }
-        }
+            }
         }
         return flag;
     }
