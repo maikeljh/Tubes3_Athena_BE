@@ -94,9 +94,9 @@ export class MessageService {
             // Persamaan tidak bisa dihitung
             answer += "Sintaks persamaan tidak sesuai.";
           } else {
-            if (resultCalcu.result.toString() === "Infinity") {
+            if (resultCalcu.result.toString() === "Infinity" || resultCalcu.result.toString() === "NaN") {
               // Infinity diubah menjadi undefined
-              answer += "Hasilnya adalah undefined.";
+              answer += "Hasilnya tidak terdefinisi.";
             } else {
               answer +=
                 "Hasilnya adalah " + resultCalcu.result.toString() + ".";
