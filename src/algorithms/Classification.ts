@@ -165,39 +165,40 @@ export class Classification {
             let maxDay = 0;
 
             // set max day
-            if (month == 2) {
-                if (year % 4 == 0 && year % 100 != 0){
-                    maxDay = 29;
+            if (year >= 1753){
+                if (month == 2) {
+                    if (year % 4 == 0 && year % 100 != 0){
+                        maxDay = 29;
+                    } else {
+                        maxDay = 28;
+                    }
+                } else if (month == 4 || month == 6 || month == 9 || month == 11){
+                    maxDay = 30;
                 } else {
-                    maxDay = 28;
+                    maxDay = 31;
                 }
-            }
-            else if (month == 4 || month == 6 || month == 9 || month == 11){
-                maxDay = 30;
-            }
-            else {
-                maxDay = 31;
-            }
 
-            if (day > maxDay || day < 1 || month < 1 || month > 12){
-                flag = false;
-            } else {
-                // adjust month and year to Zeller's Rule
-                if (month < 3) {
-                    month +=12;
-                    year--;
-                }
-                if(month >=3) {
-                    month -=2;
-                }
-                const k = day;
-                const m = month;
-                const D = year % 100;
-                const C = Math.floor( year / 100);
+                if (day > maxDay || day < 1 || month < 1 || month > 12){
+                    flag = false;
+                } else {
+                    // adjust month and year to Zeller's Rule
+                    if (month < 3) {
+                        month +=12;
+                        year--;
+                    }
+                    if(month >=3) {
+                        month -=2;
+                    }
 
-                // Zeller's Rule
-                result = k + Math.floor((13 * m -1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C;
-                result = Math.abs(result % 7);
+                    const k = day;
+                    const m = month;
+                    const D = year % 100;
+                    const C = Math.floor( year / 100);
+
+                    // Zeller's Rule
+                    result = k + Math.floor((13 * m -1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C;
+                    result = Math.abs(result % 7);
+                }
             }
         }
 
