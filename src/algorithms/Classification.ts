@@ -13,7 +13,7 @@ export class Classification {
 
     // Classify is calculator or not
     isCalculator = (s: string) => {
-        const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.^\s]+)(\?)?$/;
+        const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.^\s]+)(\?)?$/i;
         const operatorsArray = ["+", "-", "*", "/", "^"];
         const match = regexCalculator.exec(s);
         let result = 0;
@@ -207,7 +207,7 @@ export class Classification {
 
     // Classify is delete or not
     isDelete = (s: string) => {
-        const regexDelete: RegExp = /^Hapus pertanyaan .+$/;
+        const regexDelete: RegExp = /^Hapus pertanyaan .+$/i;
         if (regexDelete.test(s)) {
             return true;
         } else {
@@ -217,7 +217,7 @@ export class Classification {
 
     // Classify is add or not
     isAdd = (s: string) => {
-        const regexAdd: RegExp = /^Tambahkan pertanyaan .+ dengan jawaban .+$/;
+        const regexAdd: RegExp = /^Tambahkan pertanyaan .+ dengan jawaban .+$/i;
         if (regexAdd.test(s)) {
             return true;
         } else {
