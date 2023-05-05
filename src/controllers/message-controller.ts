@@ -3,16 +3,22 @@ import { MessageService } from "../services/message-service";
 
 export class MessageController {
   private messageService: MessageService;
-  
+
   constructor(messageService: MessageService) {
     this.messageService = messageService;
   }
 
-  async getAllMessagesInUserHistory(req: Request, res: Response): Promise<void> {
+  async getAllMessagesInUserHistory(
+    req: Request,
+    res: Response
+  ): Promise<void> {
     try {
       const userId = Number(req.params.userId);
       const historyId = Number(req.params.historyId);
-      const allMessages = await this.messageService.getAllMessagesInUserHistory(userId, historyId);
+      const allMessages = await this.messageService.getAllMessagesInUserHistory(
+        userId,
+        historyId
+      );
       res.status(200).json(allMessages);
     } catch (error) {
       console.error(error);
@@ -27,11 +33,16 @@ export class MessageController {
       const historyId = Number(req.params.historyId);
       const algorithm = String(req.query.algo);
 
-      if(algorithm !== "kmp" && algorithm !== "bm"){
+      if (algorithm !== "kmp" && algorithm !== "bm") {
         throw new Error("Algorithm not valid!");
       }
-      
-      const allMessages = await this.messageService.createMessageInUserHistory(data, userId, historyId, algorithm);
+
+      const allMessages = await this.messageService.createMessageInUserHistory(
+        data,
+        userId,
+        historyId,
+        algorithm
+      );
       res.status(201).json(allMessages);
     } catch (error) {
       console.error(error);

@@ -17,14 +17,14 @@ export class UserController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  
+
   async createUser(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
       const createdUser = await this.userService.createUser(data);
       res.status(201).json(createdUser);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 }

@@ -7,7 +7,7 @@ export class QnaController {
   constructor(qnaService: QnaService) {
     this.qnaService = qnaService;
   }
-  
+
   async getAllQna(req: Request, res: Response): Promise<void> {
     try {
       const allQna = await this.qnaService.getAllQna();
@@ -17,7 +17,7 @@ export class QnaController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  
+
   async createQna(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
@@ -28,7 +28,7 @@ export class QnaController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  
+
   async updateQna(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
@@ -40,7 +40,7 @@ export class QnaController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  
+
   async deleteQna(req: Request, res: Response): Promise<void> {
     try {
       const qnaId = Number(req.params.qnaId);

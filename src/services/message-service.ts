@@ -70,7 +70,8 @@ export class MessageService {
       // Check if message empty or not
       if (classify.isEmpty(question)) {
         answer += "Pertanyaan kosong.";
-      } else if (resultDate.flag) { // Check if message is date or not
+      } else if (resultDate.flag) {
+        // Check if message is date or not
         var theDate = resultDate.result;
         var days = [
           "Minggu",
@@ -83,7 +84,8 @@ export class MessageService {
         ];
         var result = days[theDate];
         answer += "Hari " + result + ".";
-      } else if (resultCalcu.flag) { // Check if message is calculator or not
+      } else if (resultCalcu.flag) {
+        // Check if message is calculator or not
         let expression = question;
         try {
           if (expression[expression.length - 1] === "?") {
@@ -94,7 +96,10 @@ export class MessageService {
             // Persamaan tidak bisa dihitung
             answer += "Sintaks persamaan tidak sesuai.";
           } else {
-            if (resultCalcu.result.toString() === "Infinity" || resultCalcu.result.toString() === "NaN") {
+            if (
+              resultCalcu.result.toString() === "Infinity" ||
+              resultCalcu.result.toString() === "NaN"
+            ) {
               // Infinity diubah menjadi undefined
               answer += "Hasilnya tidak terdefinisi.";
             } else {
@@ -106,7 +111,8 @@ export class MessageService {
           // Syntax not valid
           answer += "Sintaks persamaan tidak sesuai.";
         }
-      } else if (classify.isDelete(question)) { // Check if message is delete qna
+      } else if (classify.isDelete(question)) {
+        // Check if message is delete qna
         // Define regex pattern
         let regexQuestion = /^Hapus pertanyaan\s+(.*)$/i;
 
@@ -159,7 +165,8 @@ export class MessageService {
             answer +=
               "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
           }
-        } else if (count > 1) { // If exact match bigger than one
+        } else if (count > 1) {
+          // If exact match bigger than one
           // Initialize variables
           let max = 0;
           let accuracy = 0;
@@ -198,7 +205,8 @@ export class MessageService {
           answer +=
             "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
         }
-      } else if (classify.isAdd(question)) { // If message is add QnA
+      } else if (classify.isAdd(question)) {
+        // If message is add QnA
         // Define regex pattern
         let regexQuestion = /^Tambahkan pertanyaan (.+) dengan jawaban (.+)$/i;
 
@@ -264,7 +272,8 @@ export class MessageService {
             answer +=
               "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";
           }
-        } else if (count > 1) { // If exact match bigger than one
+        } else if (count > 1) {
+          // If exact match bigger than one
           // Initialize variables
           let max = 0;
           let accuracy = 0;
@@ -376,7 +385,7 @@ export class MessageService {
           // Initialize variables
           let percentage: number = 0.0;
           let finalAnswer: string = "";
-          
+
           // Iterate each question of QnA
           for (let el of qna) {
             // Find maximum percentage

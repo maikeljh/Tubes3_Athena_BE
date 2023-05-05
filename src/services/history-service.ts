@@ -9,8 +9,8 @@ export class HistoryService {
 
   async getAllUserHistory(userId: number): Promise<History[]> {
     const allUserHistory = await prisma.history.findMany({
-      where: { userId: userId }
-  });
+      where: { userId: userId },
+    });
     return allUserHistory;
   }
 
@@ -64,7 +64,11 @@ export class HistoryService {
     return Number(nextHistoryId[0].nextval);
   }
 
-  async updateUserHistoryTopic(data: Prisma.HistoryCreateInput, userId: number, historyId: number){
+  async updateUserHistoryTopic(
+    data: Prisma.HistoryCreateInput,
+    userId: number,
+    historyId: number
+  ) {
     // Update user history's topic
     await prisma.history.update({
       where: {
@@ -76,15 +80,14 @@ export class HistoryService {
       data: {
         topic: data.topic,
       },
-    })
-    
+    });
+
     // Get All Updated User Histories
     const allUserHistory = await this.getAllUserHistory(userId);
 
     // Return All Updated User Histories
     return allUserHistory;
   }
-
 
   async deleteAllUserHistory(userId: number): Promise<void> {
     await prisma.history.deleteMany({

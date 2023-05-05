@@ -29,12 +29,16 @@ export class HistoryController {
     }
   }
 
-  async updateUserHistoryTopic(req: Request, res: Response){
+  async updateUserHistoryTopic(req: Request, res: Response) {
     try {
       const userId = Number(req.params.userId);
       const historyId = Number(req.params.historyId);
       const data = req.body;
-      const allHistory = await this.historyService.updateUserHistoryTopic(data, userId, historyId);
+      const allHistory = await this.historyService.updateUserHistoryTopic(
+        data,
+        userId,
+        historyId
+      );
       res.status(200).json(allHistory);
     } catch (error) {
       console.error(error);
@@ -46,7 +50,8 @@ export class HistoryController {
     try {
       const userId = Number(req.params.userId);
       const createdHistory = await this.historyService.createUserHistory(
-        userId, "History"
+        userId,
+        "History"
       );
       res.status(201).json(createdHistory);
     } catch (error) {
@@ -54,7 +59,6 @@ export class HistoryController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-
 
   async deleteAllUserHistory(req: Request, res: Response) {
     try {

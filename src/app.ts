@@ -3,13 +3,15 @@ import userRouter from "./routes/user-router";
 import qnaRouter from "./routes/qna-router";
 import historyRouter from "./routes/history-router";
 import messageRouter from "./routes/message-router";
-import cors from 'cors';
+import cors from "cors";
 
 const app = express();
 
-app.use(cors({
-    origin: true
-}));
+app.use(
+  cors({
+    origin: true,
+  })
+);
 
 app.use(express.json());
 app.use("/", userRouter);
