@@ -56,18 +56,16 @@ export class MessageService {
     var count: number = 0;
     let answer: string = "";
     const questions = data.userMessage.split("\n");
-    
-    for(let question of questions){
-      const qna = (
-        await prisma.qna.findMany()
-      )
+
+    for (let question of questions) {
+      const qna = await prisma.qna.findMany();
 
       var idx = 0;
       var percentageArray = [];
       var resultDate = classify.isDate(question);
       var resultCalcu = classify.isCalculator(question);
 
-      if (classify.isEmpty(question)){
+      if (classify.isEmpty(question)) {
         answer += "Pertanyaan kosong.";
       } else if (resultDate.flag) {
         var theDate = resultDate.result;
@@ -88,13 +86,14 @@ export class MessageService {
           if (expression[expression.length - 1] === "?") {
             expression = expression.slice(0, -1);
           }
-          if(resultCalcu.result === undefined){
+          if (resultCalcu.result === undefined) {
             answer += "Sintaks persamaan tidak sesuai.";
           } else {
-            if(resultCalcu.result.toString() === "Infinity"){
+            if (resultCalcu.result.toString() === "Infinity") {
               answer += "Hasilnya adalah undefined.";
             } else {
-              answer += "Hasilnya adalah " + resultCalcu.result.toString() + ".";
+              answer +=
+                "Hasilnya adalah " + resultCalcu.result.toString() + ".";
             }
           }
         } catch (e) {
@@ -109,29 +108,30 @@ export class MessageService {
         let qIDArray = [];
         let count = 0;
         for (let el of qna) {
-          if (!found) {
-            if(algorithm === "kmp"){
-              found = stringMatching.KMPAlgorithm(
-                deleteQuestion[1].toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            } else if(algorithm == "bm"){
-              found = stringMatching.BMAlgorithm(
-                deleteQuestion[1].toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            }
+          if (algorithm === "kmp") {
+            found = stringMatching.KMPAlgorithm(
+              deleteQuestion[1].toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+          } else if (algorithm == "bm") {
+            found = stringMatching.BMAlgorithm(
+              deleteQuestion[1].toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
           }
-          if (found ) {
+          if (found) {
             questionArray.push(el.question.toLocaleLowerCase());
             qIDArray.push(el.qnaId);
             qnaId = el.qnaId;
             count++;
           }
         }
-        if (found && count == 1) {
-          let accuracy = stringSimilarity.similarity(deleteQuestion[1].toLocaleLowerCase(), questionArray[0]);
-          if (accuracy >= 0.9){
+        if (count == 1) {
+          let accuracy = stringSimilarity.similarity(
+            deleteQuestion[1].toLocaleLowerCase(),
+            questionArray[0]
+          );
+          if (accuracy >= 0.9) {
             qnaId = qIDArray[0];
             // Delete Pertanyaan
             const deleteQnA = new QnaService();
@@ -139,26 +139,34 @@ export class MessageService {
             answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
           } else {
             answer +=
-            "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
+              "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
           }
-        } else if(found && count > 1) {
+        } else if (count > 1) {
           let max = 0;
           let accuracy = 0;
           let i = 0;
           let idx = 0;
-          for (let q of questionArray){
+          for (let q of questionArray) {
             accuracy = 0;
-            accuracy = stringSimilarity.similarity(deleteQuestion[1].toLocaleLowerCase(), q);
-            if (accuracy > max){
+            accuracy = stringSimilarity.similarity(
+              deleteQuestion[1].toLocaleLowerCase(),
+              q
+            );
+            if (accuracy > max) {
               max = accuracy;
               idx = i;
             }
             i++;
           }
-          qnaId = qIDArray[idx];
-          const deleteQnA = new QnaService();
-          await deleteQnA.deleteQna(qnaId);
-          answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+          if (max >= 0.9) {
+            qnaId = qIDArray[idx];
+            const deleteQnA = new QnaService();
+            await deleteQnA.deleteQna(qnaId);
+            answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+          } else {
+            answer +=
+              "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
+          }
         } else {
           answer +=
             "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
@@ -172,18 +180,16 @@ export class MessageService {
         let qIDArray = [];
         let count = 0;
         for (let el of qna) {
-          if (!found) {
-            if(algorithm === "kmp"){
-              found = stringMatching.KMPAlgorithm(
-                addQuestion[1].toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            } else if(algorithm == "bm"){
-              found = stringMatching.BMAlgorithm(
-                addQuestion[1].toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            }
+          if (algorithm === "kmp") {
+            found = stringMatching.KMPAlgorithm(
+              addQuestion[1].toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+          } else if (algorithm == "bm") {
+            found = stringMatching.BMAlgorithm(
+              addQuestion[1].toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
           }
           if (found) {
             questionArray.push(el.question.toLocaleLowerCase());
@@ -192,94 +198,127 @@ export class MessageService {
             count++;
           }
         }
-        if (found && count == 1) {
-          let accuracy = stringSimilarity.similarity(addQuestion[1].toLocaleLowerCase(), questionArray[0]);
-          if (accuracy >= 0.9){
+        if (count == 1) {
+          let accuracy = stringSimilarity.similarity(
+            addQuestion[1].toLocaleLowerCase(),
+            questionArray[0]
+          );
+          if (accuracy >= 0.9) {
             qnaId = qIDArray[0];
             // Update jawaban pertanyaan
             const updateQnA = new QnaService();
-            await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
+            await updateQnA.updateQna(
+              { question: addQuestion[1], answer: addQuestion[2] },
+              qnaId
+            );
             answer +=
               "Pertanyaan " +
               addQuestion[1] +
               " sudah ada! Jawaban di-update ke " +
-              addQuestion[2] + ".";
+              addQuestion[2] +
+              ".";
           } else {
             // Tambahkan pertanyaan ke database
             const addQnA = new QnaService();
-            await addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
+            await addQnA.createQna({
+              question: addQuestion[1],
+              answer: addQuestion[2],
+            });
             answer +=
-              "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!"; 
+              "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";
           }
-        } else if(found && count > 1){
+        } else if (count > 1) {
           let max = 0;
           let accuracy = 0;
           let i = 0;
           let idx = 0;
-          for (let q of questionArray){
+          for (let q of questionArray) {
             accuracy = 0;
-            accuracy = stringSimilarity.similarity(addQuestion[1].toLocaleLowerCase(), q);
-            if (accuracy > max){
+            accuracy = stringSimilarity.similarity(
+              addQuestion[1].toLocaleLowerCase(),
+              q
+            );
+            if (accuracy > max) {
               max = accuracy;
               idx = i;
             }
             i++;
           }
-          qnaId = qIDArray[idx];
-          const updateQnA = new QnaService();
-          await updateQnA.updateQna({question: addQuestion[1], answer: addQuestion[2]}, qnaId);
-          answer +=
-            "Pertanyaan " +
-            addQuestion[1] +
-            " sudah ada! Jawaban di-update ke " +
-            addQuestion[2] + ".";
+          if (max >= 0.9) {
+            qnaId = qIDArray[idx];
+            const updateQnA = new QnaService();
+            await updateQnA.updateQna(
+              { question: addQuestion[1], answer: addQuestion[2] },
+              qnaId
+            );
+            answer +=
+              "Pertanyaan " +
+              addQuestion[1] +
+              " sudah ada! Jawaban di-update ke " +
+              addQuestion[2] +
+              ".";
+          } else {
+            // Tambahkan pertanyaan ke database
+            const addQnA = new QnaService();
+            await addQnA.createQna({
+              question: addQuestion[1],
+              answer: addQuestion[2],
+            });
+            answer +=
+              "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";
+          }
         } else {
           // Tambahkan pertanyaan ke database
           const addQnA = new QnaService();
-          await addQnA.createQna({question: addQuestion[1], answer: addQuestion[2]});
+          await addQnA.createQna({
+            question: addQuestion[1],
+            answer: addQuestion[2],
+          });
           answer +=
-            "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";   
+            "Pertanyaan " + addQuestion[1] + " telah ditambah ke database!";
         }
-      } else { // Ask Question
+      } else {
+        // Ask Question
         let found = false;
         let tempAnswer = "";
         let questionArray = [];
         let answerArray = [];
         let count = 0;
         for (let el of qna) {
-          if (!found) {
-            if(algorithm === "kmp"){
-              found = stringMatching.KMPAlgorithm(
-                question.toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            } else if(algorithm == "bm"){
-              found = stringMatching.BMAlgorithm(
-                question.toLocaleLowerCase(),
-                el.question.toLocaleLowerCase()
-              );
-            }
+          if (algorithm === "kmp") {
+            found = stringMatching.KMPAlgorithm(
+              question.toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
+          } else if (algorithm == "bm") {
+            found = stringMatching.BMAlgorithm(
+              question.toLocaleLowerCase(),
+              el.question.toLocaleLowerCase()
+            );
           }
           if (found) {
-            if(el.answer[el.answer.length - 1] == "."){
-              tempAnswer += el.answer;
+            if (el.answer[el.answer.length - 1] == ".") {
+              tempAnswer = el.answer;
             } else {
-              tempAnswer += el.answer + ".";
+              tempAnswer = el.answer + ".";
             }
-            questionArray.push(el.question.toLocaleLowerCase())
+            questionArray.push(el.question.toLocaleLowerCase());
             answerArray.push(tempAnswer);
             count++;
           }
         }
-        if (found && count == 1){
-          let accuracy = stringSimilarity.similarity(question.toLocaleLowerCase(), questionArray[0]);
-          if (accuracy >= 0.9){
-            answer = answerArray[0];
+        if (count == 1) {
+          let accuracy = stringSimilarity.similarity(
+            question.toLocaleLowerCase(),
+            questionArray[0]
+          );
+          if (accuracy >= 0.9) {
+            answer += answerArray[0];
           } else {
-            found = false;
+            count = 0;
           }
         }
-        if (!found || count != 1){
+        if (count == 0 || count != 1) {
           let percentage: number = 0.0;
           let finalAnswer: string = "";
 
@@ -300,7 +339,7 @@ export class MessageService {
           }
 
           if (percentage >= 0.9) {
-            if(finalAnswer[finalAnswer.length - 1] == "."){
+            if (finalAnswer[finalAnswer.length - 1] == ".") {
               answer += finalAnswer;
             } else {
               answer += finalAnswer + ".";
@@ -312,7 +351,7 @@ export class MessageService {
             if (qna.length < 3) {
               for (let i = 0; i < qna.length; i++) {
                 if (i != qna.length - 1) {
-                  if(percentageArray[i+1].percentages > 0.5){
+                  if (percentageArray[i + 1].percentages > 0.5) {
                     answer +=
                       (i + 1).toString() +
                       ". " +
@@ -335,7 +374,7 @@ export class MessageService {
             } else {
               for (let i = 0; i < 3; i++) {
                 if (i != 2) {
-                  if(percentageArray[i+1].percentages > 0.5){
+                  if (percentageArray[i + 1].percentages > 0.5) {
                     answer +=
                       (i + 1).toString() +
                       ". " +
@@ -361,18 +400,21 @@ export class MessageService {
           }
         }
       }
-      if(count != questions.length - 1){
+      if (count != questions.length - 1) {
         answer += "\n\n";
         count++;
       }
     }
-    
+
     if (historyId === 0) {
       // Create new history
       const createHistory = new HistoryService();
 
-      const newHistory = await createHistory.createUserHistory(userId, data.userMessage);
-      
+      const newHistory = await createHistory.createUserHistory(
+        userId,
+        data.userMessage
+      );
+
       await prisma.message.create({
         data: {
           messageId: userMessageCount + 1,
@@ -382,8 +424,11 @@ export class MessageService {
           historyId: newHistory.historyId,
         },
       });
-      
-      const allMessages = await this.getAllMessagesInUserHistory(userId, newHistory.historyId);
+
+      const allMessages = await this.getAllMessagesInUserHistory(
+        userId,
+        newHistory.historyId
+      );
 
       return allMessages;
     } else {
@@ -397,7 +442,10 @@ export class MessageService {
         },
       });
 
-      const allMessages = await this.getAllMessagesInUserHistory(userId, historyId);
+      const allMessages = await this.getAllMessagesInUserHistory(
+        userId,
+        historyId
+      );
 
       return allMessages;
     }
