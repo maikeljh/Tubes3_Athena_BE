@@ -100,7 +100,7 @@ export class MessageService {
           answer += "Sintaks persamaan tidak sesuai.";
         }
       } else if (classify.isDelete(question)) {
-        let regexQuestion = /^Hapus pertanyaan\s+(.*)$/;
+        let regexQuestion = /^Hapus pertanyaan\s+(.*)$/i;
         let deleteQuestion = question.match(regexQuestion) as RegExpMatchArray;
         let found = false;
         let qnaId = 0;
@@ -174,7 +174,7 @@ export class MessageService {
             "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
         }
       } else if (classify.isAdd(question)) {
-        let regexQuestion = /^Tambahkan pertanyaan (.+) dengan jawaban (.+)$/;
+        let regexQuestion = /^Tambahkan pertanyaan (.+) dengan jawaban (.+)$/i;
         let addQuestion = question.match(regexQuestion) as RegExpMatchArray;
         let found = false;
         let qnaId = 0;
