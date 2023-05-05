@@ -136,7 +136,7 @@ export class MessageService {
             // Delete Pertanyaan
             const deleteQnA = new QnaService();
             await deleteQnA.deleteQna(qnaId);
-            answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+            answer += "Pertanyaan " + questionArray[0] + " telah dihapus.";
           } else {
             answer +=
               "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
@@ -146,6 +146,7 @@ export class MessageService {
           let accuracy = 0;
           let i = 0;
           let idx = 0;
+          let tempQuestion = "";
           for (let q of questionArray) {
             accuracy = 0;
             accuracy = stringSimilarity.similarity(
@@ -155,6 +156,7 @@ export class MessageService {
             if (accuracy > max) {
               max = accuracy;
               idx = i;
+              tempQuestion = q;
             }
             i++;
           }
@@ -162,7 +164,7 @@ export class MessageService {
             qnaId = qIDArray[idx];
             const deleteQnA = new QnaService();
             await deleteQnA.deleteQna(qnaId);
-            answer += "Pertanyaan " + deleteQuestion[1] + " telah dihapus.";
+            answer += "Pertanyaan " + tempQuestion + " telah dihapus.";
           } else {
             answer +=
               "Tidak ada pertanyaan " + deleteQuestion[1] + " pada database!";
@@ -208,12 +210,12 @@ export class MessageService {
             // Update jawaban pertanyaan
             const updateQnA = new QnaService();
             await updateQnA.updateQna(
-              { question: addQuestion[1], answer: addQuestion[2] },
+              { question: questionArray[0], answer: addQuestion[2] },
               qnaId
             );
             answer +=
               "Pertanyaan " +
-              addQuestion[1] +
+              questionArray[0] +
               " sudah ada! Jawaban di-update ke " +
               addQuestion[2] +
               ".";
@@ -232,6 +234,7 @@ export class MessageService {
           let accuracy = 0;
           let i = 0;
           let idx = 0;
+          let tempQuestion = "";
           for (let q of questionArray) {
             accuracy = 0;
             accuracy = stringSimilarity.similarity(
@@ -241,6 +244,7 @@ export class MessageService {
             if (accuracy > max) {
               max = accuracy;
               idx = i;
+              tempQuestion = q;
             }
             i++;
           }
@@ -248,12 +252,12 @@ export class MessageService {
             qnaId = qIDArray[idx];
             const updateQnA = new QnaService();
             await updateQnA.updateQna(
-              { question: addQuestion[1], answer: addQuestion[2] },
+              { question: tempQuestion, answer: addQuestion[2] },
               qnaId
             );
             answer +=
               "Pertanyaan " +
-              addQuestion[1] +
+              tempQuestion +
               " sudah ada! Jawaban di-update ke " +
               addQuestion[2] +
               ".";
