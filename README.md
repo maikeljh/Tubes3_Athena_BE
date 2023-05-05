@@ -75,7 +75,7 @@ Program ini merupakan program yang menggunakan algoritma pencocokan string Knuth
 3. Buatlah file .env yang berisi link database local
     > 
         DATABASE_URL = {link_database}
-4. Jalankan prsima migrate reset untuk menginisiasi database
+4. Jalankan prisma migrate reset untuk menginisiasi database
     > 
         prisma migrate reset
 5. Jalankan npm run dev untuk memulai server
