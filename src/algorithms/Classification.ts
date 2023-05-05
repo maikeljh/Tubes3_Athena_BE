@@ -1,5 +1,5 @@
 export class Classification {
-
+    // Classify is empty or not
     isEmpty = (s: string) => {
         const regexEmpty = /^\s*$/;
         let flag;
@@ -11,6 +11,7 @@ export class Classification {
         return flag;
     }
 
+    // Classify is calculator or not
     isCalculator = (s: string) => {
         const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.^\s]+)(\?)?$/;
         const operatorsArray = ["+", "-", "*", "/", "^"];
@@ -145,6 +146,7 @@ export class Classification {
         }
     };
 
+    // Classify is date or not
     isDate = (s: string) => {
         const inputCleaned = s.replace(/(?: \?|\?)*/g, "").replace(/\s+$/, "");
         const inputArr = inputCleaned.split(" ");
@@ -180,7 +182,6 @@ export class Classification {
             if (day > maxDay || day < 1 || month < 1 || month > 12){
                 flag = false;
             } else {
-
                 // adjust month and year to Zeller's Rule
                 if (month < 3) {
                     month +=12;
@@ -189,11 +190,11 @@ export class Classification {
                 if(month >=3) {
                     month -=2;
                 }
-
                 const k = day;
                 const m = month;
                 const D = year % 100;
                 const C = Math.floor( year / 100);
+
                 // Zeller's Rule
                 result = k + Math.floor((13 * m -1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C;
                 result = Math.abs(result % 7);
@@ -203,6 +204,7 @@ export class Classification {
         return { flag, result };
     }
 
+    // Classify is delete or not
     isDelete = (s: string) => {
         const regexDelete: RegExp = /^Hapus pertanyaan .+$/;
         if (regexDelete.test(s)) {
@@ -212,6 +214,7 @@ export class Classification {
         }
     };
 
+    // Classify is add or not
     isAdd = (s: string) => {
         const regexAdd: RegExp = /^Tambahkan pertanyaan .+ dengan jawaban .+$/;
         if (regexAdd.test(s)) {
