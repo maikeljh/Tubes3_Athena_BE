@@ -203,6 +203,8 @@ export class MessageService {
             addQuestion[1].toLocaleLowerCase(),
             questionArray[0]
           );
+          console.log(addQuestion[1].toLocaleLowerCase());
+          console.log(questionArray[0]);
           if (accuracy >= 0.9) {
             qnaId = qIDArray[0];
             // Update jawaban pertanyaan
