@@ -5,6 +5,7 @@ Tugas Besar 3 IF2211 Strategi Algoritma Penerapan String Matching dan Regular Ex
 * [Deskripsi Singkat Program](#deskripsi-singkat-program)
 * [Requirements](#requirements)
 * [Cara Menjalankan Program](#cara-menjalankan-program)
+* [Dokumentasi API](#dokumentasi-api)
 * [Dibuat Oleh](#dibuat-oleh)
 
 ## Deskripsi Singkat Program
@@ -58,9 +59,35 @@ Program ini merupakan program yang menggunakan algoritma pencocokan string Knuth
 ```
 
 ## Requirements
-* 
+* Prisma CLI
+* Express.js
+* Node.js
+* Typescript Compiler
+* PostgreSQL
 
 ## Cara menjalankan Program
+1. Lakukan git clone
+    > 
+        git clone https://github.com/maikeljh/Tubes3_Athena_BE.git
+2. Jalankan npm i pada directory root project
+    > 
+        npm i
+3. Buatlah file .env yang berisi link database local
+    > 
+        DATABASE_URL = {link_database}
+4. Jalankan prsima migrate reset untuk menginisiasi database
+    > 
+        prisma migrate reset
+5. Jalankan npm run dev untuk memulai server
+    > 
+        npm run dev
+
+## Dokumentasi API
+Link dokumentasi API : https://documenter.getpostman.com/view/17084544/2s93eVXtc9
+
+## Gambar Relational Model Database
+![Athena](https://user-images.githubusercontent.com/87570374/236466994-173c25eb-13c3-41a3-80c8-d561a3bdff6b.png)
+
 
 ## Dibuat Oleh
 * Nama : Noel Christoffel Simbolon
