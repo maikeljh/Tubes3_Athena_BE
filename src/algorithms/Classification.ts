@@ -1,8 +1,11 @@
 export class Classification {
     // Classify is empty or not
     isEmpty = (s: string) => {
+        // Regex empty message
         const regexEmpty = /^\s*$/;
         let flag;
+        
+        // Test string with regex pattern
         if (regexEmpty.test(s)){
             flag = true;
         } else {
@@ -13,36 +16,70 @@ export class Classification {
 
     // Classify is calculator or not
     isCalculator = (s: string) => {
+        // Regex calculator
         const regexCalculator= /^(?:(?:Berapa|Hitung|Kalkulasi)\s+)?([()\d+\-*/.^\s]+)(\?)?$/i;
+
+        // Array of operators
         const operatorsArray = ["+", "-", "*", "/", "^"];
+
+        // Try to find match regex pattern in string
         const match = regexCalculator.exec(s);
+
+        // Initialize variables
         let result = 0;
         let flag = false;
 
+        // If match found
         if (match) {
+            // Initialize variables
             let values = [];
             let operators = [];
             let input = match[1].split('');
-
-            for (let i = 0; i < input.length; i++){
-                if (input[i] == ' '){
+            let newInput = [];
+            for(let i = 0; i < input.length; i++){
+                if(input[i] == '('){
+                    if(i > 0){
+                        let needInsertMultiply = false;
+                        let tempIdx = i-1;
+                        while(tempIdx >= 0){
+                            if(input[tempIdx] == ')' || (input[tempIdx] >= '0' && input[tempIdx] <= '9')){
+                                needInsertMultiply = true;
+                                break;
+                            }
+                            tempIdx--;
+                        }
+                        if(needInsertMultiply){
+                            newInput.push('*');
+                            newInput.push(input[i]);
+                        } else {
+                            newInput.push(input[i]);
+                        }
+                    } else {
+                        newInput.push(input[i]);
+                    }
+                } else {
+                    newInput.push(input[i]);
+                }
+            }
+            for (let i = 0; i < newInput.length; i++){
+                if (newInput[i] == ' '){
                     // Checking if before and after number or not
                     let j = i, k = i;
                     let wrong = false;
                     let done = false;
                     while(--j >= 0 && !done){
-                        if(input[j] >= '0' && input[j] <= '9'){
-                            while(++k < input.length && !wrong){
-                                if(input[k] >= '0' && input[k] <= '9'){
+                        if(newInput[j] >= '0' && newInput[j] <= '9'){
+                            while(++k < newInput.length && !wrong){
+                                if(newInput[k] >= '0' && newInput[k] <= '9'){
                                     done = true;
                                     wrong = true;
                                     break;
-                                } else if(input[k] != ' '){
+                                } else if(newInput[k] != ' '){
                                     done = true;
                                     break;
                                 }
                             }
-                        } else if(input[j] != ' '){
+                        } else if(newInput[j] != ' '){
                             done = true;
                             break;        
                         }
@@ -55,24 +92,24 @@ export class Classification {
                     }
                 }
                 
-                if(input[i] >= '0' && input[i] <= '9'){
-                    let tempValue = input[i];
+                if(newInput[i] >= '0' && newInput[i] <= '9'){
+                    let tempValue = newInput[i];
                     
-                    while (i+1 < input.length && ((input[i+1] >= '0' && input[i+1] <= '9') || input[i+1] == '.')){
-                        tempValue += input[++i];
+                    while (i+1 < newInput.length && ((newInput[i+1] >= '0' && newInput[i+1] <= '9') || newInput[i+1] == '.')){
+                        tempValue += newInput[++i];
                     }
                     
                     values.push(Number(tempValue));
                 }
 
-                if (input[i] == '('){
-                    if (input[i+1] == '-'){
+                if (newInput[i] == '('){
+                    if (newInput[i+1] == '-'){
                         values.push(0);
                     }
-                    operators.push(input[i]);
+                    operators.push(newInput[i]);
                 }
 
-                if (input[i] == ')'){
+                if (newInput[i] == ')'){
                     while (operators[operators.length - 1] != '('){
                         const tempCalOps = operators.pop();
                         const tempCalVal1 = values.pop() as number;
@@ -84,11 +121,11 @@ export class Classification {
                     operators.pop();
                 }
 
-                if (operatorsArray.includes(input[i])){
-                    if(input[i] == "-" && i == 0){
+                if (operatorsArray.includes(newInput[i])){
+                    if(newInput[i] == "-" && i == 0){
                         values.push(0);
                     }
-                    let tempOps = input[i];
+                    let tempOps = newInput[i];
                     while (operators.length > 0 && priorityOps(tempOps, operators[operators.length -1])){
                         const tempCalOps = operators.pop();
                         const tempCalVal1 = values.pop() as number;
@@ -110,9 +147,14 @@ export class Classification {
                 }
             }
 
-            result = values.pop() as number;
-            flag = true;
-            return {flag, result};
+            if(values.length > 1){
+                flag = true;
+                return {flag, undefined};
+            } else {
+                result = values.pop() as number;
+                flag = true;
+                return {flag, result};
+            }
         } else {
             return {flag, result} ;
         }
@@ -148,11 +190,14 @@ export class Classification {
 
     // Classify is date or not
     isDate = (s: string) => {
+        // Find date from string
         const inputCleaned = s.replace(/(?: \?|\?)*/g, "").replace(/\s+$/, "");
         const inputArr = inputCleaned.split(" ");
         const dateString = inputArr[inputArr.length - 1];
         const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
         let match = dateString.match(dateRegex);
+
+        // Initialize variables
         let flag = true;
         let result = 0;
 
@@ -199,6 +244,8 @@ export class Classification {
                     result = k + Math.floor((13 * m -1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C;
                     result = Math.abs(result % 7);
                 }
+            } else {
+                flag = false;
             }
         }
 
@@ -207,6 +254,7 @@ export class Classification {
 
     // Classify is delete or not
     isDelete = (s: string) => {
+        // Regex delete qna
         const regexDelete: RegExp = /^Hapus pertanyaan .+$/i;
         if (regexDelete.test(s)) {
             return true;
@@ -217,6 +265,7 @@ export class Classification {
 
     // Classify is add or not
     isAdd = (s: string) => {
+        // Regex add qna
         const regexAdd: RegExp = /^Tambahkan pertanyaan .+ dengan jawaban .+$/i;
         if (regexAdd.test(s)) {
             return true;
