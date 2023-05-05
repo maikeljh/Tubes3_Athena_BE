@@ -45,6 +45,8 @@ export class Classification {
                             if(input[tempIdx] == ')' || (input[tempIdx] >= '0' && input[tempIdx] <= '9')){
                                 needInsertMultiply = true;
                                 break;
+                            } else if(input[tempIdx] != ' '){
+                                break;
                             }
                             tempIdx--;
                         }
